@@ -31,8 +31,52 @@ body {
   color: #111111;
 }
 
+/*
+ * Playback cursor ("playhead"). alphaTab enables the cursor but ships no visible
+ * styling for it, so by default you can't tell where playback is. We render it
+ * like a video-editor playhead: a soft highlight over the current bar plus a
+ * bold vertical line on the current beat.
+ */
+.at-cursor-bar {
+  /* current measure highlight */
+  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
+.at-cursor-beat {
+  /* the vertical playhead line */
+  background: var(--color-accent-strong);
+  width: 3px;
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--color-accent-strong) 70%, transparent);
+}
+
+.at-selection div {
+  background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+/* Notes under the cursor light up in the accent colour. */
+.at-highlight * {
+  fill: var(--color-accent-strong) !important;
+  stroke: var(--color-accent-strong) !important;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* Count-in overlay ("1 · 2 · 3 · 4" before playback starts). */
+@keyframes countpop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
 }
 
 /* Thin scrollbars for the player area */
