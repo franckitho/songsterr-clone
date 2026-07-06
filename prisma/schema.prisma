@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artist      String
+  album       String?
+  genre       String?
+  difficulty  String? // beginner | intermediate | advanced
+  tuning      String? // free text, e.g. "Drop D"
+  filePath    String // relative path inside storage/tabs/
+  fileFormat  String // gp | gp5 | gpx | musicxml ...
+  coverImage  String?
+  soundfontId String?
+  soundfont   Asset?   @relation(fields: [soundfontId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Asset {
+  id        String   @id @default(cuid())
+  name      String
+  type      String // SOUNDFONT
+  filePath  String // relative path inside storage/assets/
+  size      Int
+  songs     Song[]
+  createdAt DateTime @default(now())
+}
