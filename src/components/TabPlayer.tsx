@@ -79,6 +79,7 @@ export function TabPlayer({
           player: {
             enablePlayer: true,
             enableCursor: true,
+            enableAnimatedBeatCursor: true,
             enableUserInteraction: true,
             soundFont: soundFontUrl ? toAbsolute(soundFontUrl) : DEFAULT_SOUNDFONT(),
             scrollElement: viewportRef.current!,

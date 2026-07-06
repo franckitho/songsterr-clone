@@ -33,20 +33,28 @@ body {
 
 /*
  * Playback cursor ("playhead"). alphaTab enables the cursor but ships no visible
- * styling for it, so by default you can't tell where playback is. We render it
- * like a video-editor playhead: a soft highlight over the current bar plus a
- * bold vertical line on the current beat.
+ * styling for it, so on its own you can barely tell where playback is.
+ *
+ * The beat cursor (the vertical "trait") is the important part: it must read as a
+ * clear playhead sitting on top of the tab, moving in sync with the notes. alphaTab
+ * sizes it with an inline `width` that it then squeezes with `transform: scaleX(...)`
+ * (≈0.01), so a plain `width`/`box-shadow` here has almost no visible effect — the
+ * horizontal glow gets crushed by the same scale. We override the inline width with
+ * `!important` (it is scaled back down to a few px) to get a genuinely bold line,
+ * and keep the measure highlight light so the line stays the focus.
  */
 .at-cursor-bar {
-  /* current measure highlight */
-  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  /* current measure highlight — kept subtle so the playhead line stands out */
+  background: color-mix(in srgb, var(--color-accent) 13%, transparent);
 }
 
 .at-cursor-beat {
-  /* the vertical playhead line */
+  /* the vertical playhead line, on top of the notation */
   background: var(--color-accent-strong);
-  width: 3px;
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--color-accent-strong) 70%, transparent);
+  /* !important beats alphaTab's inline width; scaled back to ~5px by its transform */
+  width: 520px !important;
+  border-radius: 9999px;
+  box-shadow: 0 0 10px 0 color-mix(in srgb, var(--color-accent-strong) 80%, transparent);
 }
 
 .at-selection div {
