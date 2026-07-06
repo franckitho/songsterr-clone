@@ -39,6 +39,8 @@ export function TabPlayer({
   const mainRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<any>(null);
+  const tempoRef = useRef(120);
+  const countdownTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -51,6 +53,7 @@ export function TabPlayer({
   const [looping, setLooping] = useState(false);
   const [metronome, setMetronome] = useState(false);
   const [countIn, setCountIn] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const [layout, setLayout] = useState<Layout>("page");
   const [stave, setStave] = useState<Stave>("scoretab");
   const [zoom, setZoom] = useState(1);
@@ -95,6 +98,8 @@ export function TabPlayer({
           setTracks(list);
           setActiveTrack(0);
           setStatus("ready");
+          const t = Number(score.tempo);
+          if (isFinite(t) && t > 0) tempoRef.current = t;
         });
 
         api.renderStarted.on(() => {
@@ -104,7 +109,14 @@ export function TabPlayer({
         api.soundFontLoaded.on(() => setSoundFontReady(true));
 
         api.playerStateChanged.on((e: any) => {
-          setPlaying(e.state === 1 /* Playing */);
+          const isPlaying = e.state === 1 /* Playing */;
+          setPlaying(isPlaying);
+          // If playback pauses/stops during the count-in, drop the overlay.
+          if (!isPlaying && countdownTimer.current) {
+            clearInterval(countdownTimer.current);
+            countdownTimer.current = null;
+            setCountdown(null);
+          }
         });
 
         api.playerPositionChanged.on((e: any) => {
@@ -124,6 +136,10 @@ export function TabPlayer({
 
     return () => {
       disposed = true;
+      if (countdownTimer.current) {
+        clearInterval(countdownTimer.current);
+        countdownTimer.current = null;
+      }
       try {
         api?.destroy?.();
       } catch {
@@ -202,9 +218,59 @@ export function TabPlayer({
     }
   };
 
+  // ---- count-in ----
+  const clearCountdown = useCallback(() => {
+    if (countdownTimer.current) {
+      clearInterval(countdownTimer.current);
+      countdownTimer.current = null;
+    }
+    setCountdown(null);
+  }, []);
+
+  // Show an animated "1 · 2 · 3 · 4" overlay, one number per beat at the
+  // score's tempo. Runs alongside alphaTab's audible count-in clicks.
+  const runVisualCountdown = useCallback(() => {
+    clearCountdown();
+    const beatMs = 60000 / (tempoRef.current || 120);
+    let n = 1;
+    setCountdown(1);
+    countdownTimer.current = setInterval(() => {
+      n += 1;
+      if (n > 4) {
+        clearCountdown();
+      } else {
+        setCountdown(n);
+      }
+    }, beatMs);
+  }, [clearCountdown]);
+
   // ---- transport ----
-  const playPause = () => apiRef.current?.playPause();
-  const stop = () => apiRef.current?.stop();
+  const playPause = () => {
+    const api = apiRef.current;
+    if (!api) return;
+    // Starting from a stopped state with count-in on → show the visual decount.
+    if (!playing && countIn) runVisualCountdown();
+    api.playPause();
+  };
+
+  // Dedicated "1·2·3·4 then play" button: always counts in, even if the
+  // count-in preference is off. Restores the preference afterwards.
+  const playWithCountIn = () => {
+    const api = apiRef.current;
+    if (!api || playing) return;
+    api.countInVolume = 1;
+    runVisualCountdown();
+    api.play();
+    // count-in only affects the start, so restore the toggle's value once past it.
+    setTimeout(() => {
+      if (apiRef.current) apiRef.current.countInVolume = countIn ? 1 : 0;
+    }, (60000 / (tempoRef.current || 120)) * 4 + 200);
+  };
+
+  const stop = () => {
+    clearCountdown();
+    apiRef.current?.stop();
+  };
 
   const changeSpeed = (v: number) => {
     setSpeed(v);
@@ -247,6 +313,14 @@ export function TabPlayer({
           title="Stop"
         >
           ■
+        </button>
+        <button
+          onClick={playWithCountIn}
+          disabled={status !== "ready" || playing}
+          className="h-9 px-2.5 rounded-full bg-surface-2 border border-border grid place-items-center gap-1 text-xs font-medium hover:text-accent disabled:opacity-40"
+          title="Décompte 1·2·3·4 puis lecture"
+        >
+          1·2·3·4 ▶
         </button>
 
         <div className="text-xs tabular-nums text-muted w-24 text-center">
@@ -405,8 +479,18 @@ export function TabPlayer({
         {/* Notation viewport */}
         <div
           ref={viewportRef}
-          className="flex-1 overflow-auto scrollbar-thin bg-neutral-100"
+          className="relative flex-1 overflow-auto scrollbar-thin bg-neutral-100"
         >
+          {countdown !== null && (
+            <div className="pointer-events-none sticky top-0 left-0 z-30 flex h-0 items-start justify-center">
+              <div
+                key={countdown}
+                className="mt-16 grid h-28 w-28 animate-[countpop_0.5s_ease-out] place-items-center rounded-full bg-accent-strong text-6xl font-bold text-black shadow-2xl"
+              >
+                {countdown}
+              </div>
+            </div>
+          )}
           {status === "error" ? (
             <div className="p-8 text-danger text-sm">
               Impossible de charger la tablature : {errorMsg}
