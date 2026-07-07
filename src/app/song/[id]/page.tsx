@@ -22,28 +22,34 @@ export default async function SongPage({
   const soundFontUrl = song.soundfont ? `/api/files/${song.soundfont.filePath}` : null;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <div className="border-b border-border bg-surface px-4 py-3 flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <Link href="/" className="text-xs text-muted hover:text-foreground">
-            ← Catalogue
-          </Link>
-          <h1 className="text-lg font-bold truncate">{song.title}</h1>
-          <p className="text-sm text-muted truncate">
-            {song.artist}
-            {song.album ? ` · ${song.album}` : ""}
-            {song.tuning ? ` · ${song.tuning}` : ""}
-            {song.difficulty
-              ? ` · ${DIFFICULTY_LABELS[song.difficulty] ?? song.difficulty}`
-              : ""}
-          </p>
+    <section className="animate-fade-up flex h-full min-h-0 flex-col px-[26px] pb-6 pt-5">
+      <div className="mb-3.5 flex-none">
+        <Link href="/" className="cursor-pointer text-[12.5px] text-[#8b95a3] hover:text-foreground">
+          ← Catalogue
+        </Link>
+        <h1 className="mb-0.5 mt-[7px] font-display text-[24px] font-bold text-heading">
+          {song.title}
+        </h1>
+        <div className="text-[13px] text-[#8b95a3]">
+          {song.artist}
+          {song.album ? ` · ${song.album}` : ""}
+          {song.tuning ? ` · ${song.tuning}` : ""}
+          {song.difficulty ? (
+            <>
+              {" · "}
+              <span className="text-accent">
+                {DIFFICULTY_LABELS[song.difficulty] ?? song.difficulty}
+              </span>
+            </>
+          ) : (
+            ""
+          )}
         </div>
       </div>
 
-      {/* Fixed-height player area so the notation viewport can scroll internally. */}
-      <div className="flex-1 min-h-0" style={{ height: "calc(100vh - 8.5rem)" }}>
+      <div className="min-h-0 flex-1">
         <TabPlayer fileUrl={fileUrl} soundFontUrl={soundFontUrl} />
       </div>
-    </div>
+    </section>
   );
 }

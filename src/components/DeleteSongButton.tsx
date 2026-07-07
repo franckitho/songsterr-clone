@@ -23,7 +23,7 @@ export function DeleteSongButton({ id, title }: { id: string; title: string }) {
     <button
       onClick={onDelete}
       disabled={busy}
-      className="text-muted hover:text-danger disabled:opacity-50"
+      className="rounded-[8px] border border-border-strong bg-transparent px-3 py-1.5 text-[12px] font-semibold text-muted hover:border-danger hover:text-danger disabled:opacity-50"
     >
       {busy ? "…" : "Supprimer"}
     </button>

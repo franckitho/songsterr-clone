@@ -11,43 +11,41 @@ function LoginForm() {
   const [error, formAction, pending] = useActionState(loginAction, undefined);
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
+    <div className="flex min-h-full items-center justify-center p-4">
       <form
         action={formAction}
-        className="w-full max-w-sm bg-surface border border-border rounded-xl p-6 space-y-4"
+        className="w-full max-w-sm space-y-4 rounded-[16px] border border-border bg-surface p-6"
       >
         <div>
-          <h1 className="text-xl font-bold">Connexion admin</h1>
-          <p className="text-sm text-muted mt-1">
-            Réservé à la gestion du catalogue.
-          </p>
+          <h1 className="font-display text-[20px] font-semibold text-heading">Connexion admin</h1>
+          <p className="mt-1 text-sm text-muted-2">Réservé à la gestion du catalogue.</p>
         </div>
         <input type="hidden" name="callbackUrl" value={callbackUrl} />
-        <label className="block text-sm">
-          <span className="text-muted">Email</span>
+        <label className="block text-[12px] font-semibold text-muted">
+          Email
           <input
             name="email"
             type="email"
             required
             autoComplete="username"
-            className="mt-1 w-full rounded-md bg-surface-2 border border-border px-3 py-2 outline-none focus:border-accent"
+            className={loginInput}
           />
         </label>
-        <label className="block text-sm">
-          <span className="text-muted">Mot de passe</span>
+        <label className="block text-[12px] font-semibold text-muted">
+          Mot de passe
           <input
             name="password"
             type="password"
             required
             autoComplete="current-password"
-            className="mt-1 w-full rounded-md bg-surface-2 border border-border px-3 py-2 outline-none focus:border-accent"
+            className={loginInput}
           />
         </label>
         {error && <p className="text-sm text-danger">{error}</p>}
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-md bg-accent text-black font-medium py-2 hover:bg-accent-strong transition disabled:opacity-60"
+          className="w-full rounded-[11px] bg-accent py-3 text-[14px] font-bold text-accent-ink hover:bg-accent-strong transition-colors disabled:opacity-60"
         >
           {pending ? "Connexion…" : "Se connecter"}
         </button>
@@ -55,6 +53,9 @@ function LoginForm() {
     </div>
   );
 }
+
+const loginInput =
+  "mt-1.5 block w-full rounded-[10px] border border-border-strong bg-white/[0.04] px-[13px] py-[11px] text-[14px] text-[#e8ebf0] outline-none";
 
 export default function LoginPage() {
   return (

@@ -53,71 +53,63 @@ export function AssetManager({ assets }: { assets: AssetRow[] }) {
     <div className="space-y-6">
       <form
         onSubmit={onUpload}
-        className="rounded-xl border border-border bg-surface p-4 space-y-3"
+        className="space-y-3 rounded-[16px] border border-border bg-surface p-[22px]"
       >
-        <h2 className="font-semibold">Uploader un soundfont</h2>
+        <h2 className="text-[13px] font-bold text-heading">Uploader un soundfont</h2>
         {error && <p className="text-sm text-danger">{error}</p>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label className="block text-sm">
-            <span className="text-muted">Nom</span>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="block text-[12px] font-semibold text-muted">
+            Nom
             <input
               name="name"
               placeholder="ex: Clean Guitar SF2"
-              className="mt-1 w-full rounded-md bg-surface-2 border border-border px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1.5 block w-full rounded-[10px] border border-border-strong bg-white/[0.04] px-[13px] py-[11px] text-[14px] text-[#e8ebf0] outline-none"
             />
           </label>
-          <label className="block text-sm">
-            <span className="text-muted">Fichier ({SOUNDFONT_EXTENSIONS.join(", ")})</span>
+          <label className="block text-[12px] font-semibold text-muted">
+            Fichier ({SOUNDFONT_EXTENSIONS.join(", ")})
             <input
               name="file"
               type="file"
               accept={SOUNDFONT_EXTENSIONS.join(",")}
               required
-              className="mt-1 block w-full text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-accent file:text-black file:px-3 file:py-1.5 file:font-medium hover:file:bg-accent-strong"
+              className="mt-1.5 block w-full text-sm text-muted file:mr-3 file:rounded-[10px] file:border-0 file:bg-accent file:px-4 file:py-2 file:font-semibold file:text-accent-ink hover:file:bg-accent-strong"
             />
           </label>
         </div>
         <button
           type="submit"
           disabled={uploading}
-          className="rounded-md bg-accent text-black font-medium px-4 py-2 text-sm hover:bg-accent-strong transition disabled:opacity-60"
+          className="rounded-[10px] bg-accent px-4 py-2.5 text-[13px] font-bold text-accent-ink hover:bg-accent-strong transition-colors disabled:opacity-60"
         >
           {uploading ? "Upload…" : "Uploader"}
         </button>
       </form>
 
       {assets.length === 0 ? (
-        <p className="text-muted text-sm">
+        <p className="text-sm text-muted">
           Aucun soundfont uploadé. Le soundfont par défaut (sonivox) est utilisé pour tous les
           morceaux.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full text-sm">
-            <thead className="bg-surface text-muted text-left">
-              <tr>
-                <th className="px-4 py-2 font-medium">Nom</th>
-                <th className="px-4 py-2 font-medium">Taille</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {assets.map((a) => (
-                <tr key={a.id}>
-                  <td className="px-4 py-2">{a.name}</td>
-                  <td className="px-4 py-2 text-muted">{formatSize(a.size)}</td>
-                  <td className="px-4 py-2 text-right">
-                    <button
-                      onClick={() => onDelete(a.id, a.name)}
-                      className="text-muted hover:text-danger"
-                    >
-                      Supprimer
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="overflow-hidden rounded-[16px] border border-border bg-surface">
+          {assets.map((a) => (
+            <div
+              key={a.id}
+              className="flex items-center justify-between gap-3 border-b border-white/[0.04] px-[22px] py-[15px] last:border-b-0"
+            >
+              <div className="min-w-0">
+                <div className="truncate text-[14px] font-semibold text-[#e8ebf0]">{a.name}</div>
+                <div className="font-mono text-[12px] text-muted-2">{formatSize(a.size)}</div>
+              </div>
+              <button
+                onClick={() => onDelete(a.id, a.name)}
+                className="rounded-[8px] border border-border-strong bg-transparent px-3 py-1.5 text-[12px] font-semibold text-muted hover:border-danger hover:text-danger"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

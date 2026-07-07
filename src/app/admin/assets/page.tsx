@@ -8,12 +8,14 @@ export default async function AssetsPage() {
   const assets = await prisma.asset.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
-    <div className="mx-auto max-w-3xl w-full px-4 py-8">
-      <Link href="/admin" className="text-sm text-muted hover:text-foreground">
+    <section className="animate-fade-up max-w-3xl px-[30px] py-7 pb-10">
+      <Link href="/admin" className="text-[12.5px] text-muted hover:text-foreground">
         ← Retour
       </Link>
-      <h1 className="text-2xl font-bold mt-2 mb-2">Bibliothèque d’assets</h1>
-      <p className="text-muted text-sm mb-6">
+      <h1 className="mb-2 mt-2 font-display text-[22px] font-semibold text-heading">
+        Bibliothèque d’assets
+      </h1>
+      <p className="mb-6 text-sm text-muted">
         Uploade des soundfonts (.sf2/.sf3) pour changer le timbre des instruments à la lecture.
         Associe-les ensuite à un morceau depuis son formulaire.
       </p>
@@ -25,6 +27,6 @@ export default async function AssetsPage() {
           createdAt: a.createdAt.toISOString(),
         }))}
       />
-    </div>
+    </section>
   );
 }

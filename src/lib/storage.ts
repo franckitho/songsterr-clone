@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { createReadStream, existsSync } from "node:fs";
-import { join, normalize, resolve } from "node:path";
+import { join, normalize, resolve, sep } from "node:path";
 
 // Root of the on-disk storage. Kept outside of /public so uploads are only
 // ever served through the guarded /api/files route.
@@ -18,7 +18,7 @@ function bucketDir(bucket: StorageBucket): string {
 export function resolveStoragePath(relativePath: string): string | null {
   const normalized = normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
   const abs = resolve(STORAGE_ROOT, normalized);
-  if (abs !== STORAGE_ROOT && !abs.startsWith(STORAGE_ROOT + "/")) return null;
+  if (abs !== STORAGE_ROOT && !abs.startsWith(STORAGE_ROOT + sep)) return null;
   return abs;
 }
 

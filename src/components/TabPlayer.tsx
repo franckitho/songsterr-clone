@@ -296,230 +296,233 @@ export function TabPlayer({
   const progress = pos.total > 0 ? (pos.current / pos.total) * 100 : 0;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Transport bar */}
-      <div className="border-b border-border bg-surface px-3 py-2 flex flex-wrap items-center gap-2 sticky top-14 z-20">
+      <div className="mb-4 flex flex-none flex-wrap items-center gap-3 rounded-[14px] border border-border bg-gradient-to-b from-[#13171e] to-[#101318] px-[15px] py-[11px]">
         <button
           onClick={playPause}
           disabled={status !== "ready"}
-          className="w-10 h-10 rounded-full bg-accent text-black grid place-items-center hover:bg-accent-strong disabled:opacity-40 transition text-lg"
+          className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full bg-accent text-accent-ink shadow-[0_6px_20px_rgba(233,185,73,.35)] transition hover:bg-accent-strong disabled:opacity-40"
           title="Lecture / Pause (Espace)"
         >
-          {playing ? "❚❚" : "▶"}
+          {playing ? (
+            <span className="flex gap-[4px]">
+              <span className="h-4 w-[5px] rounded-[1px] bg-accent-ink" />
+              <span className="h-4 w-[5px] rounded-[1px] bg-accent-ink" />
+            </span>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden>
+              <polygon points="6,4 16,10 6,16" fill="#0c0e11" />
+            </svg>
+          )}
         </button>
         <button
           onClick={stop}
           disabled={status !== "ready"}
-          className="w-9 h-9 rounded-full bg-surface-2 border border-border grid place-items-center hover:text-accent disabled:opacity-40"
+          className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[10px] border border-border-strong bg-white/[0.03] transition hover:text-accent disabled:opacity-40"
           title="Stop"
         >
-          ■
+          <span className="h-3 w-3 rounded-[2px] bg-[#c9d1dc]" />
         </button>
         <button
           onClick={playWithCountIn}
           disabled={status !== "ready" || playing}
-          className="h-9 px-2.5 rounded-full bg-surface-2 border border-border grid place-items-center gap-1 text-xs font-medium hover:text-accent disabled:opacity-40"
+          className="flex h-[38px] flex-none items-center rounded-[10px] border border-border-strong bg-white/[0.03] px-[13px] font-mono text-[12px] font-semibold text-[#c9d1dc] transition hover:text-accent disabled:opacity-40"
           title="Décompte 1·2·3·4 puis lecture"
         >
           1·2·3·4 ▶
         </button>
 
-        <div className="text-xs tabular-nums text-muted w-24 text-center">
+        <div className="w-[98px] flex-none text-center font-mono text-[13px] text-[#aeb6c2]">
           {fmt(pos.current)} / {fmt(pos.total)}
         </div>
 
-        <div className="flex-1 min-w-[120px] h-1.5 bg-surface-2 rounded-full overflow-hidden">
-          <div className="h-full bg-accent" style={{ width: `${progress}%` }} />
+        <div className="h-[6px] min-w-[150px] flex-1 overflow-hidden rounded-[3px] bg-white/[0.08]">
+          <div className="h-full rounded-[3px] bg-accent" style={{ width: `${progress}%` }} />
         </div>
 
-        <Control label="Vitesse">
-          <select
-            value={speed}
-            onChange={(e) => changeSpeed(Number(e.target.value))}
-            className={selectCls}
-          >
-            {[0.25, 0.5, 0.75, 1, 1.25, 1.5, 2].map((s) => (
-              <option key={s} value={s}>
-                {s}×
-              </option>
-            ))}
-          </select>
-        </Control>
+        <div className="flex flex-wrap items-center gap-2">
+          <Control label="Vitesse">
+            <select
+              value={speed}
+              onChange={(e) => changeSpeed(Number(e.target.value))}
+              className={selectCls}
+            >
+              {[0.25, 0.5, 0.75, 1, 1.25, 1.5, 2].map((s) => (
+                <option key={s} value={s}>
+                  {s}×
+                </option>
+              ))}
+            </select>
+          </Control>
 
-        <Toggle active={looping} onClick={toggleLoop} title="Boucle">
-          ↻
-        </Toggle>
-        <Toggle active={metronome} onClick={toggleMetronome} title="Métronome">
-          🎵
-        </Toggle>
-        <Toggle active={countIn} onClick={toggleCountIn} title="Décompte">
-          1234
-        </Toggle>
+          <Toggle active={looping} onClick={toggleLoop} title="Boucle">
+            ↻
+          </Toggle>
+          <Toggle active={metronome} onClick={toggleMetronome} title="Métronome">
+            ♪
+          </Toggle>
+          <Toggle active={countIn} onClick={toggleCountIn} title="Décompte">
+            1234
+          </Toggle>
 
-        <Control label="Vue">
-          <select
-            value={layout}
-            onChange={(e) => {
-              const v = e.target.value as Layout;
-              setLayout(v);
-              applyDisplay({ layout: v });
-            }}
-            className={selectCls}
-          >
-            <option value="page">Page</option>
-            <option value="horizontal">Horizontal</option>
-          </select>
-        </Control>
+          <Control label="Vue">
+            <select
+              value={layout}
+              onChange={(e) => {
+                const v = e.target.value as Layout;
+                setLayout(v);
+                applyDisplay({ layout: v });
+              }}
+              className={selectCls}
+            >
+              <option value="page">Page</option>
+              <option value="horizontal">Défilement</option>
+            </select>
+          </Control>
 
-        <Control label="Notation">
-          <select
-            value={stave}
-            onChange={(e) => {
-              const v = e.target.value as Stave;
-              setStave(v);
-              applyDisplay({ stave: v });
-            }}
-            className={selectCls}
-          >
-            <option value="scoretab">Partition + Tab</option>
-            <option value="tab">Tablature</option>
-            <option value="score">Partition</option>
-          </select>
-        </Control>
+          <Control label="Notation">
+            <select
+              value={stave}
+              onChange={(e) => {
+                const v = e.target.value as Stave;
+                setStave(v);
+                applyDisplay({ stave: v });
+              }}
+              className={selectCls}
+            >
+              <option value="scoretab">Les deux</option>
+              <option value="tab">Tablature</option>
+              <option value="score">Standard</option>
+            </select>
+          </Control>
 
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => {
-              const z = Math.max(0.5, Math.round((zoom - 0.25) * 100) / 100);
-              setZoom(z);
-              applyDisplay({ zoom: z });
-            }}
-            className="w-7 h-7 rounded bg-surface-2 border border-border hover:text-accent"
-            title="Dézoomer"
-          >
-            −
-          </button>
-          <span className="text-xs text-muted w-10 text-center tabular-nums">
-            {Math.round(zoom * 100)}%
-          </span>
-          <button
-            onClick={() => {
-              const z = Math.min(2, Math.round((zoom + 0.25) * 100) / 100);
-              setZoom(z);
-              applyDisplay({ zoom: z });
-            }}
-            className="w-7 h-7 rounded bg-surface-2 border border-border hover:text-accent"
-            title="Zoomer"
-          >
-            +
-          </button>
+          <div className="flex items-center overflow-hidden rounded-[9px] border border-border-strong">
+            <button
+              onClick={() => {
+                const z = Math.max(0.5, Math.round((zoom - 0.25) * 100) / 100);
+                setZoom(z);
+                applyDisplay({ zoom: z });
+              }}
+              className="h-[30px] w-7 bg-white/[0.04] text-[16px] leading-none text-[#c9d1dc] hover:text-accent"
+              title="Dézoomer"
+            >
+              −
+            </button>
+            <span className="w-[46px] text-center font-mono text-[12px] text-[#c9d1dc]">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={() => {
+                const z = Math.min(2, Math.round((zoom + 0.25) * 100) / 100);
+                setZoom(z);
+                applyDisplay({ zoom: z });
+              }}
+              className="h-[30px] w-7 bg-white/[0.04] text-[16px] leading-none text-[#c9d1dc] hover:text-accent"
+              title="Zoomer"
+            >
+              +
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex min-h-0 flex-1 items-start gap-4">
         {/* Track list */}
-        <aside className="w-52 shrink-0 border-r border-border bg-surface overflow-y-auto scrollbar-thin">
-          <div className="px-3 py-2 text-xs uppercase tracking-wide text-muted">Pistes</div>
-          {tracks.length === 0 && (
-            <div className="px-3 py-2 text-xs text-muted">Chargement…</div>
-          )}
-          {tracks.map((t) => (
-            <div
-              key={t.index}
-              className={`px-2 py-2 border-b border-border/50 ${
-                activeTrack === t.index ? "bg-surface-2" : ""
-              }`}
-            >
-              <button
-                onClick={() => showTrack(t.index)}
-                className={`block w-full text-left text-sm truncate mb-1 ${
-                  activeTrack === t.index ? "text-accent font-medium" : "hover:text-foreground"
-                }`}
-                title="Afficher la tablature de cette piste"
-              >
-                {t.name}
-              </button>
-              <div className="flex items-center gap-1">
+        <aside className="hidden h-full w-[224px] flex-none flex-col overflow-y-auto rounded-[14px] border border-border bg-surface px-[15px] py-4 scrollbar-thin sm:flex">
+          <div className="mb-4 text-[10.5px] font-bold tracking-[0.14em] text-faint">PISTES</div>
+          {tracks.length === 0 && <div className="text-[12px] text-muted">Chargement…</div>}
+          <div className="flex flex-col gap-[18px]">
+            {tracks.map((t) => (
+              <div key={t.index}>
                 <button
-                  onClick={() => toggleMute(t.index)}
-                  className={`text-[11px] w-6 h-6 rounded border ${
-                    t.mute
-                      ? "bg-danger/20 border-danger text-danger"
-                      : "border-border text-muted hover:text-foreground"
+                  onClick={() => showTrack(t.index)}
+                  className={`mb-[9px] block w-full truncate text-left text-[13px] font-semibold ${
+                    activeTrack === t.index ? "text-accent" : "text-[#e8ebf0] hover:text-foreground"
                   }`}
-                  title="Muet"
+                  title="Afficher la tablature de cette piste"
                 >
-                  M
+                  {t.name}
                 </button>
-                <button
-                  onClick={() => toggleSolo(t.index)}
-                  className={`text-[11px] w-6 h-6 rounded border ${
-                    t.solo
-                      ? "bg-accent/20 border-accent text-accent"
-                      : "border-border text-muted hover:text-foreground"
-                  }`}
-                  title="Solo"
-                >
-                  S
-                </button>
-                <input
-                  type="range"
-                  min={0}
-                  max={1.5}
-                  step={0.05}
-                  value={t.volume}
-                  onChange={(e) => setTrackVolume(t.index, Number(e.target.value))}
-                  className="flex-1 accent-[var(--color-accent)]"
-                  title="Volume"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleMute(t.index)}
+                    className={`h-7 w-[30px] flex-none rounded-[7px] text-[12px] font-bold ${
+                      t.mute ? "bg-accent text-accent-ink" : "bg-white/[0.06] text-muted"
+                    }`}
+                    title="Muet"
+                  >
+                    M
+                  </button>
+                  <button
+                    onClick={() => toggleSolo(t.index)}
+                    className={`h-7 w-[30px] flex-none rounded-[7px] text-[12px] font-bold ${
+                      t.solo ? "bg-accent/20 text-accent" : "bg-white/[0.06] text-muted"
+                    }`}
+                    title="Solo"
+                  >
+                    S
+                  </button>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1.5}
+                    step={0.05}
+                    value={t.volume}
+                    onChange={(e) => setTrackVolume(t.index, Number(e.target.value))}
+                    className="min-w-0 flex-1 accent-[var(--color-accent)]"
+                    title="Volume"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </aside>
 
         {/* Notation viewport */}
         <div
           ref={viewportRef}
-          className="relative flex-1 overflow-auto scrollbar-thin bg-neutral-100"
+          className="relative h-full min-w-0 flex-1 overflow-auto rounded-[14px] border border-border bg-panel p-[18px] scrollbar-thin"
         >
           {countdown !== null && (
             <div className="pointer-events-none sticky top-0 left-0 z-30 flex h-0 items-start justify-center">
               <div
                 key={countdown}
-                className="mt-16 grid h-28 w-28 animate-[countpop_0.5s_ease-out] place-items-center rounded-full bg-accent-strong text-6xl font-bold text-black shadow-2xl"
+                className="mt-16 grid h-28 w-28 animate-[countpop_0.5s_ease-out] place-items-center rounded-full bg-playhead text-6xl font-bold text-accent-ink shadow-2xl"
               >
                 {countdown}
               </div>
             </div>
           )}
           {status === "error" ? (
-            <div className="p-8 text-danger text-sm">
+            <div className="p-8 text-sm text-danger">
               Impossible de charger la tablature : {errorMsg}
             </div>
           ) : (
-            <div ref={mainRef} className="at-surface min-h-full" />
+            <div
+              ref={mainRef}
+              className="at-surface min-h-full rounded-[5px] shadow-[0_12px_44px_rgba(0,0,0,.45)]"
+            />
           )}
           {status === "loading" && (
-            <div className="p-8 text-neutral-500 text-sm">Chargement de la tablature…</div>
+            <div className="p-8 text-sm text-neutral-500">Chargement de la tablature…</div>
           )}
         </div>
       </div>
 
       {!soundFontReady && status === "ready" && (
-        <div className="px-3 py-1 text-[11px] text-muted bg-surface border-t border-border">
-          Préparation du son…
-        </div>
+        <div className="mt-2 flex-none text-[11px] text-muted">Préparation du son…</div>
       )}
     </div>
   );
 }
 
 const selectCls =
-  "rounded bg-surface-2 border border-border px-1.5 py-1 text-xs outline-none focus:border-accent";
+  "rounded-[8px] bg-white/[0.05] border border-border-strong px-[9px] py-1.5 text-[12.5px] text-[#e8ebf0] cursor-pointer outline-none";
 
 function Control({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="flex items-center gap-1 text-xs text-muted">
+    <label className="flex items-center gap-1.5 text-[11.5px] text-muted-2">
       <span className="hidden lg:inline">{label}</span>
       {children}
     </label>
@@ -541,10 +544,10 @@ function Toggle({
     <button
       onClick={onClick}
       title={title}
-      className={`h-8 px-2 rounded border text-xs ${
+      className={`flex h-[38px] min-w-[38px] items-center justify-center rounded-[10px] px-2 text-[15px] ${
         active
-          ? "bg-accent/20 border-accent text-accent"
-          : "bg-surface-2 border-border text-muted hover:text-foreground"
+          ? "border border-accent/40 bg-accent/[0.14] text-accent"
+          : "border border-border-strong bg-white/[0.03] text-[#c9d1dc] hover:text-foreground"
       }`}
     >
       {children}

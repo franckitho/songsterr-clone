@@ -12,12 +12,14 @@ export default async function NewSongPage() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl w-full px-4 py-8">
-      <Link href="/admin" className="text-sm text-muted hover:text-foreground">
+    <section className="animate-fade-up px-[30px] py-7 pb-10">
+      <Link href="/admin" className="text-[12.5px] text-muted hover:text-foreground">
         ← Retour
       </Link>
-      <h1 className="text-2xl font-bold mt-2 mb-6">Ajouter une musique</h1>
+      <h1 className="mb-6 mt-2 font-display text-[22px] font-semibold text-heading">
+        Ajouter une musique
+      </h1>
       <SongForm assets={assets} />
-    </div>
+    </section>
   );
 }

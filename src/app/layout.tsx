@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Manrope, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { auth } from "@/auth";
-import { AdminNav } from "@/components/AdminNav";
+import { Sidebar } from "@/components/Sidebar";
+import { Topbar } from "@/components/Topbar";
+
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "TabPlayer — clone Songsterr",
+  title: "Fretline — clone Songsterr",
   description: "Jouez des tablatures Guitar Pro avec le son et le curseur synchronisés.",
 };
 
@@ -16,21 +29,18 @@ export default async function RootLayout({
   const isAdmin = !!session;
 
   return (
-    <html lang="fr" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-bg text-foreground">
-        <header className="border-b border-border bg-surface/80 backdrop-blur sticky top-0 z-30">
-          <div className="mx-auto max-w-7xl px-4 h-14 flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-              <span className="text-accent">▶</span>
-              <span>TabPlayer</span>
-            </Link>
-            <AdminNav isAdmin={isAdmin} />
+    <html
+      lang="fr"
+      className={`h-full antialiased ${manrope.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="h-full overflow-hidden bg-bg text-foreground">
+        <div className="flex h-screen overflow-hidden">
+          <Sidebar isAdmin={isAdmin} />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <Topbar isAdmin={isAdmin} />
+            <main className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">{children}</main>
           </div>
-        </header>
-        <main className="flex-1 flex flex-col">{children}</main>
-        <footer className="border-t border-border text-xs text-muted py-3 text-center">
-          Rendered using alphaTab · projet perso façon Songsterr
-        </footer>
+        </div>
       </body>
     </html>
   );
